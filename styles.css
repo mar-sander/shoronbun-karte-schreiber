@@ -155,7 +155,7 @@ button { cursor: pointer; }
 .diagnosis-date-value { left: 213.2mm; top: 47.5mm; width: 31.2mm; height: 14mm; background: #fcfcf8; }
 .submission-value { left: 249.4mm; top: 47.5mm; width: 16.5mm; height: 14mm; }
 .overall-comment-value { left: 348.5mm; top: 47.5mm; width: 60.7mm; height: 14mm; }
-.overall-notice-value { left: 147mm; top: 132.2mm; width: 52.1mm; height: 46.8mm; }
+.overall-notice-value { left: 146mm; top: 132.2mm; width: 54.5mm; height: 46.8mm; }
 
 .essay-type-marks,
 .detail-marks,
@@ -231,9 +231,11 @@ button { cursor: pointer; }
   position: absolute;
   z-index: 3;
   left: 320.3mm;
+  display: flex;
+  align-items: center;
   width: 88mm;
   height: 10.1mm;
-  padding-left: 1.8mm;
+  padding: .5mm 1.8mm;
   overflow: hidden;
   color: #111;
   font-family: "Noto Sans JP", "Noto Sans CJK JP", sans-serif;
@@ -250,7 +252,7 @@ button { cursor: pointer; }
 .observation-reason-value,
 .prescription-first-value,
 .prescription-next-value,
-.prescription-advanced-value { padding-left: 1.5mm; }
+.prescription-advanced-value { padding-inline: 1.5mm; }
 
 .observation-good-value { left: 11.3mm; top: 216mm; width: 62mm; height: 21.4mm; }
 .observation-concern-value { left: 76.1mm; top: 216mm; width: 62mm; height: 21.4mm; }
@@ -258,8 +260,8 @@ button { cursor: pointer; }
 .prescription-first-value { left: 210.9mm; top: 216mm; width: 64.3mm; height: 21.4mm; }
 .prescription-next-value { left: 278mm; top: 216mm; width: 64.3mm; height: 21.4mm; }
 .prescription-advanced-value { left: 345.1mm; top: 216mm; width: 64.3mm; height: 21.4mm; }
-.key-phrase-value { left: 10.2mm; top: 256.1mm; width: 284.7mm; height: 20.9mm; }
-.note-value { left: 301.2mm; top: 256.1mm; width: 108mm; height: 20.9mm; }
+.key-phrase-value { left: 10.2mm; top: 256.1mm; width: 284.7mm; height: 20.9mm; padding-top: 1.8mm; }
+.note-value { left: 301.2mm; top: 256.1mm; width: 108mm; height: 20.9mm; padding-top: 1.8mm; }
 
 .sidebar {
   position: relative;
@@ -392,6 +394,7 @@ input[type="checkbox"] { width: 15px; height: 15px; min-height: 0; margin: 0; ac
 .detail-title { font-size: 12px; font-weight: 500; line-height: 1.45; }
 .rating-options { display: flex; gap: 13px; }
 .field-counter { color: #757c76; font-size: 10px; text-align: right; }
+.field-counter.short { color: #996b00; font-weight: 500; }
 .field-counter.over { color: #b42324; font-weight: 700; }
 
 .button-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }

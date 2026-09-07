@@ -64,21 +64,21 @@
 
 2026-09-07、実測結果とNo.Mの指導方針に基づく文字数・行数上限を正式値としてコードへ反映しました。文字種や改行により結果は変わるため、実運用ではブラウザ上の行数警告を最終判断にしてください。
 
-| 欄 | 正式文字数 | 実測行数 | 正式行数 | 結果 |
+| 欄 | 文字数基準 | 実測行数 | 正式行数 | 結果 |
 |---|---:|---:|---:|---|
-| テーマ・設問 | 50 | 2 | 2 | PASS |
-| display_name | 15 | 1 | 1 | PASS |
-| 総合所見 | 19 | 1 | 1 | PASS |
-| Overall 気づいたこと | 32 | 2 | 2 | PASS |
-| Detailed Check 各コメント | 45 | 2 | 2 | PASS |
-| Observation① | 57 | 3 | 3 | PASS |
-| Observation② | 57 | 3 | 3 | PASS |
-| Observation③ | 57 | 3 | 3 | PASS |
-| Prescription① | 57 | 3 | 3 | PASS |
-| Prescription② | 57 | 3 | 3 | PASS |
-| Prescription③ | 57 | 3 | 3 | PASS |
-| Key Phrase | 35 | 1 | 2 | PASS |
-| Note | 60 | 2 | 3 | PASS |
+| テーマ・設問 | 上限50 | 2 | 2 | PASS |
+| display_name | 上限15 | 1 | 1 | PASS |
+| 総合所見 | 上限19 | 1 | 1 | PASS |
+| Overall 気づいたこと | 35–50 | 3 | 3 | PASS |
+| Detailed Check 各コメント | 上限45 | 2 | 2 | PASS |
+| Observation① | 50–70 | 4 | 4 | PASS |
+| Observation② | 50–70 | 4 | 4 | PASS |
+| Observation③ | 50–70 | 4 | 4 | PASS |
+| Prescription① | 50–70 | 4 | 4 | PASS |
+| Prescription② | 50–70 | 4 | 4 | PASS |
+| Prescription③ | 50–70 | 4 | 4 | PASS |
+| Key Phrase | 150–220 | 3 | 4 | PASS |
+| Note | 上限60 | 2 | 3 | PASS |
 
 正式上限反映後の限定QAでは、上限定義、Noto Sans JP 9pt固定、既存サンプルoverflow 0件、`OVER`警告、JavaScript構文、変更範囲を確認し、すべてPASSでした。Chrome／Edge印刷、全機能回帰、OAuthは今回再実行していません。
 
@@ -144,3 +144,15 @@
 基本情報欄の配置、診断日の一体表示、Observation／Prescription本文間隔、Detailed Check選択コントラスト、No.欄、READ／THINK／WRITE／GROW字間、レーダー周辺の白被りと「5」重複、Node／npx起動バッチを限定修正しました。省リソースQAのみ実施し、Chrome／Edge完全印刷、OAuth、Google Sheets書込、全機能回帰は再実行していません。
 
 検証画像：[修正後A3プレビュー](qa-evidence/chrome-review-stage.png)
+
+## Ver.1.1文字量・可読性調整（2026-09-07）
+
+- Overall、Observation、Prescription、Key Phraseへ推奨最低文字数と新上限・行数を反映し、SHORT／OVERをカウンター・警告一覧・要確認サマリーへ表示しました。
+- 指示されたtakashi基準文字数（44、65、70、68、57、61、64、188字）はSHORT 0件／OVER 0件でした。各正式最小値・最大値でも誤警告と実表示overflowは0件でした。
+- Detailed Checkは1行・2行とも縦中央、左右1.8mm余白に統一しました。Observation／Prescriptionは左右1.5mm余白、Key Phrase／Noteは上1.8mm余白へ調整しました。
+- Noto Sans JP 9pt、Marker Count 0、A3横1ページ（1191.12 × 841.92pt）を維持し、ブラウザエラーと文字切れは0件でした。
+
+QA証跡：
+
+- [Ver.1.1 A3全体](qa-evidence/ver1.1-a3.png)
+- [SHORT / OVER警告](qa-evidence/ver1.1-warnings.png)

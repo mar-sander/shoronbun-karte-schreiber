@@ -74,6 +74,7 @@ const state = {
   }),
   cloudRecords: [],
   dirty: false,
+  short: [],
   overflow: [],
 };
 
@@ -342,23 +343,30 @@ function measureOverflow() {
     const text = String(state.record[field] ?? "");
     const chars = Array.from(text).length;
     const lines = renderedLineCount(target, text);
+    const short = Number.isFinite(limit.minChars) && chars < limit.minChars;
     const over = chars > limit.chars || lines > limit.lines || target.scrollHeight > target.clientHeight + 1;
     const result = {
       field,
       label: limit.label,
+      minChars: limit.minChars,
       maxChars: limit.chars,
       maxLines: limit.lines,
       actualChars: chars,
       actualLines: lines,
+      short,
       over,
     };
     results.push(result);
     const counter = document.querySelector(`[data-counter-for="${field}"]`);
     if (counter) {
-      counter.textContent = `${chars} / ${limit.chars}${chars > limit.chars ? " OVER" : ""}　${lines} / ${limit.lines}${lines > limit.lines ? " OVER" : ""}`;
+      const charRange = Number.isFinite(limit.minChars) ? `${limit.minChars}–${limit.chars}` : String(limit.chars);
+      const charStatus = short ? " SHORT" : chars > limit.chars ? " OVER" : "";
+      counter.textContent = `${chars} / ${charRange}${charStatus}　${lines} / ${limit.lines}${lines > limit.lines ? " OVER" : ""}`;
+      counter.classList.toggle("short", short);
       counter.classList.toggle("over", over);
     }
   }
+  state.short = results.filter((result) => result.short);
   state.overflow = results.filter((result) => result.over);
   renderCheckSummary();
 }
@@ -387,13 +395,16 @@ function renderedLineCount(target, text) {
 
 function renderCheckSummary() {
   const missing = requiredMissing();
-  const issueCount = missing.length + state.overflow.length;
+  const issueCount = missing.length + state.short.length + state.overflow.length;
   elements.checkSummary.classList.toggle("has-errors", issueCount > 0);
   elements.checkSummary.innerHTML = issueCount === 0
     ? "必須項目・評価・紙面内表示を確認しました。"
-    : `要確認：必須項目 ${missing.length}件、overflow ${state.overflow.length}件。`;
+    : `要確認：必須項目 ${missing.length}件、SHORT ${state.short.length}件、OVER ${state.overflow.length}件。`;
   const messages = [];
   for (const field of missing) messages.push(`<div class="overflow-item">未入力：${escapeHtml(field)}</div>`);
+  for (const item of state.short) {
+    messages.push(`<div class="overflow-item">${escapeHtml(item.label)}：${item.actualChars} / ${item.minChars}–${item.maxChars} SHORT、${item.actualLines} / ${item.maxLines}</div>`);
+  }
   for (const item of state.overflow) {
     const charSuffix = item.actualChars > item.maxChars ? " OVER" : "";
     const lineSuffix = item.actualLines > item.maxLines ? " OVER" : "";
@@ -662,7 +673,7 @@ function escapeHtml(value) {
 }
 
 window.__SCHREIBER_TEST__ = {
-  getState: () => ({ record: { ...state.record }, overflow: [...state.overflow], markerCount: elements.radarData.parentElement.querySelectorAll("circle").length }),
+  getState: () => ({ record: { ...state.record }, short: [...state.short], overflow: [...state.overflow], markerCount: elements.radarData.parentElement.querySelectorAll("circle").length }),
   applyRecord: (record) => { state.record = normalizeRecord({ ...blankRecord(), ...record }); applyRecordToInputs(); renderCheckAfterState(); },
   measureField: (field, text) => {
     const target = document.querySelector(`[data-field="${field}"]`);
