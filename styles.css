@@ -155,7 +155,13 @@ button { cursor: pointer; }
 .diagnosis-date-value { left: 213.2mm; top: 47.5mm; width: 31.2mm; height: 14mm; background: #fcfcf8; }
 .submission-value { left: 249.4mm; top: 47.5mm; width: 16.5mm; height: 14mm; }
 .overall-comment-value { left: 348.5mm; top: 47.5mm; width: 60.7mm; height: 14mm; }
-.overall-notice-value { left: 146mm; top: 132.2mm; width: 54.5mm; height: 46.8mm; }
+.overall-notice-value {
+  left: 145mm;
+  top: 132.2mm;
+  width: 56.5mm;
+  height: 46.8mm;
+  padding-inline: 1mm;
+}
 
 .essay-type-marks,
 .detail-marks,
