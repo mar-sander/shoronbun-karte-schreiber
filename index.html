@@ -1,1 +1,190 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <title>Schreiber | Shoronbun Karte</title>
+    <link rel="icon" href="data:," />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="config.js"></script>
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="preview-pane" aria-label="A3カルテプレビュー">
+        <div class="preview-toolbar">
+          <span>A3 横プレビュー</span>
+          <span id="previewScale">表示倍率を計算中</span>
+        </div>
+        <div id="paperStage" class="paper-stage">
+          <article id="kartePaper" class="karte-paper" aria-label="Shoronbun Karte A3印刷面">
+            <img class="master-background" src="assets/karte-master.png" alt="" aria-hidden="true" />
 
+            <div class="read-think-stack" aria-hidden="true">
+              <span>READ</span><span>THINK</span><span>WRITE</span><span>GROW</span>
+            </div>
+
+            <div class="paper-field theme-value" data-field="theme"></div>
+            <div class="paper-field character-limit-value" data-field="character_limit"></div>
+            <div class="paper-field display-name-value" data-field="display_name"></div>
+            <div class="paper-field diagnosis-date-value" data-field="diagnosis_date"></div>
+            <div class="paper-field submission-value" data-field="submission_number"></div>
+            <div id="essayTypeMarks" class="essay-type-marks" aria-hidden="true"></div>
+            <div class="paper-field overall-comment-value" data-field="overall_comment"></div>
+
+            <svg id="radarChart" class="radar-chart" viewBox="0 0 100 100" role="img" aria-label="5項目レーダーチャート">
+              <polygon points="50,-1 98.504,34.241 79.977,91.259 20.023,91.259 1.496,34.241" fill="#FCFCF8"></polygon>
+              <rect x="46" y="-4" width="8" height="7" fill="#FCFCF8"></rect>
+              <g id="radarGrid" fill="none"></g>
+              <g id="radarNumbers" class="radar-numbers"></g>
+              <polygon id="radarData" fill="rgba(220,40,49,.11)" stroke="#DC2831" stroke-width="0.55" stroke-linejoin="round"></polygon>
+            </svg>
+            <div class="paper-field overall-notice-value" data-field="overall_notice"></div>
+            <img id="rankStamp" class="rank-stamp" alt="総合ランクスタンプ" />
+
+            <div id="detailMarks" class="detail-marks" aria-hidden="true"></div>
+            <div id="detailComments" class="detail-comments"></div>
+
+            <div class="paper-field observation-good-value" data-field="observation_good"></div>
+            <div class="paper-field observation-concern-value" data-field="observation_concern"></div>
+            <div class="paper-field observation-reason-value" data-field="observation_reason"></div>
+            <div class="paper-field prescription-first-value" data-field="prescription_first"></div>
+            <div class="paper-field prescription-next-value" data-field="prescription_next"></div>
+            <div class="paper-field prescription-advanced-value" data-field="prescription_advanced"></div>
+            <div class="paper-field key-phrase-value" data-field="key_phrase"></div>
+            <div class="paper-field note-value" data-field="note"></div>
+          </article>
+        </div>
+      </section>
+
+      <aside class="sidebar" aria-label="Schreiber入力パネル">
+        <header class="sidebar-header">
+          <div>
+            <h1>Schreiber</h1>
+            <p>小論文カルテ作成ツール</p>
+          </div>
+          <div id="connectionBadge" class="connection-badge offline">手動モード</div>
+        </header>
+
+        <section class="record-controls">
+          <label for="recordSelect">データ選択</label>
+          <div class="record-row">
+            <select id="recordSelect" aria-label="診断データ選択"></select>
+            <button id="reloadButton" class="icon-button" type="button" title="Google Sheetsから再読み込み">再読み込み</button>
+          </div>
+          <div id="recordStatus" class="record-status"></div>
+        </section>
+
+        <div id="noticeBar" class="notice-bar info" role="status">Google認証未設定でも、入力・JSON取込・印刷を利用できます。</div>
+
+        <div class="accordion-stack">
+          <details>
+            <summary>JUIZ IMPORT</summary>
+            <div class="accordion-body">
+              <label for="jsonImport">Schreiber形式JSON</label>
+              <textarea id="jsonImport" rows="8" spellcheck="false" placeholder="ここにJSONを貼り付けます"></textarea>
+              <button id="importButton" class="secondary-button" type="button">JSONを反映</button>
+              <p id="importMessage" class="inline-message" aria-live="polite"></p>
+            </div>
+          </details>
+
+          <details open>
+            <summary>基本情報</summary>
+            <div class="accordion-body field-grid">
+              <label>record_id<input data-bind="record_id" type="text" /></label>
+              <label>student_id<input data-bind="student_id" type="text" /></label>
+              <label>display_name<input data-bind="display_name" type="text" /></label>
+              <label>カルテNo.<input data-bind="karte_no" type="text" /></label>
+              <label class="full">テーマ・設問<textarea data-bind="theme" rows="3"></textarea></label>
+              <label>制限字数<input data-bind="character_limit" type="number" min="0" /></label>
+              <label>診断日<input data-bind="diagnosis_date" type="date" /></label>
+              <label>提出回数<input data-bind="submission_number" type="number" min="1" /></label>
+              <fieldset class="full choice-group">
+                <legend>今回の答案の型・状態</legend>
+                <div id="essayTypeInputs" class="choice-list"></div>
+              </fieldset>
+              <label class="full">総合所見（ひとこと）<textarea data-bind="overall_comment" rows="2"></textarea></label>
+            </div>
+          </details>
+
+          <details>
+            <summary>Overall Evaluation</summary>
+            <div class="accordion-body">
+              <div id="scoreInputs" class="score-grid"></div>
+              <label>気づいたこと<textarea data-bind="overall_notice" rows="4"></textarea></label>
+              <label>総合ランク<select data-bind="rank" id="rankInput"></select></label>
+            </div>
+          </details>
+
+          <details>
+            <summary>Detailed Check</summary>
+            <div id="detailInputs" class="accordion-body detail-inputs"></div>
+          </details>
+
+          <details>
+            <summary>Observation</summary>
+            <div class="accordion-body">
+              <label>① 良いところ<textarea data-bind="observation_good" rows="4"></textarea></label>
+              <label>② 気になるところ<textarea data-bind="observation_concern" rows="4"></textarea></label>
+              <label>③ なぜそこが弱いのか<textarea data-bind="observation_reason" rows="4"></textarea></label>
+            </div>
+          </details>
+
+          <details>
+            <summary>Prescription</summary>
+            <div class="accordion-body">
+              <label>① 最優先で直すこと<textarea data-bind="prescription_first" rows="4"></textarea></label>
+              <label>② 次に取り組むこと<textarea data-bind="prescription_next" rows="4"></textarea></label>
+              <label>③ さらに良くするために<textarea data-bind="prescription_advanced" rows="4"></textarea></label>
+            </div>
+          </details>
+
+          <details>
+            <summary>Key Phrase / Note</summary>
+            <div class="accordion-body">
+              <label>Key Phrase<textarea data-bind="key_phrase" rows="3"></textarea></label>
+              <label>Note<textarea data-bind="note" rows="4"></textarea></label>
+            </div>
+          </details>
+
+          <details open>
+            <summary>保存・チェック</summary>
+            <div class="accordion-body">
+              <div class="mode-explanation"><strong>正本：</strong>Google Sheets　<strong>端末：</strong>一時ドラフトのみ</div>
+              <label>状態<select data-bind="status"><option value="draft">下書き</option><option value="confirmed">確定</option><option value="printed">印刷済み</option></select></label>
+              <label class="checkbox-label"><input data-bind="confirmed" type="checkbox" /> No.Mによる診断確定</label>
+              <div class="field-grid compact">
+                <label>テーマ分類<select data-bind="theme_category" id="themeCategoryInput"></select></label>
+                <label>最重要課題<select data-bind="primary_issue" id="primaryIssueInput"></select></label>
+                <label class="full">前回record_id<input data-bind="previous_record_id" type="text" /></label>
+                <label class="checkbox-label full"><input data-bind="is_revision" type="checkbox" /> 書き直し答案</label>
+                <label class="full">前回からの変化<textarea data-bind="improvement_note" rows="3"></textarea></label>
+              </div>
+              <div class="button-row">
+                <button id="googleAuthButton" class="secondary-button" type="button">Googleへ接続</button>
+                <button id="saveGoogleButton" class="primary-button" type="button">Google Sheetsへ保存</button>
+              </div>
+              <div class="button-row">
+                <button id="saveDraftButton" class="secondary-button" type="button">端末へ一時保存</button>
+                <button id="restoreDraftButton" class="secondary-button" type="button">一時保存を復元</button>
+              </div>
+              <div id="checkSummary" class="check-summary" aria-live="polite"></div>
+              <div id="overflowList" class="overflow-list"></div>
+            </div>
+          </details>
+        </div>
+
+        <div class="print-dock">
+          <button id="printButton" class="print-button" type="button">印刷</button>
+        </div>
+      </aside>
+    </main>
+    <div id="measurementLayer" class="measurement-layer" aria-hidden="true"></div>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
